@@ -1,0 +1,6 @@
+# Syntax Coloring for AM1002-UART Library
+# Datatypes (KEYWORD1)
+
+# Methods and Functions (KEYWORD2)
+
+# Constants (LITERAL1)
