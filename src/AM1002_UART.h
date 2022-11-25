@@ -32,8 +32,8 @@ public:
     float getTemperature(void);
     float getHumidity(void);
 
-    uint8_t readSoftwareVersionNumber(char * data);
-    void readSerialNumber(uint8_t * data);
+    void readSoftwareVersionNumber(char * pData);
+    void readSerialNumber(uint8_t * pData);
 private:
     void clearBuffer(void);
 

@@ -123,7 +123,7 @@ bool AM1002_UART::measure(void)
 
     int16_t len = recvData(AM1002_UART_CMD_READ_MEASUREMENT_RESULT);
 
-    if (len != 19)
+    if (len != 18)
     {
         return false;
     }
@@ -134,6 +134,72 @@ bool AM1002_UART::measure(void)
     pm10 = (data[8] << 8) + data[9];
     temperature = ((data[10] << 8) + data[11]) / (float)10;
     humidity = ((data[12] << 8) + data[13]) / (float)10;
+
+    return true;
+}
+
+bool AM1002_UART::requestSoftwareVersionNumber(void)
+{
+    txBuffer[0] = AM1002_UART_STX_SND;
+    txBuffer[1] = 0x01;
+    txBuffer[2] = AM1002_UART_CMD_READ_SOFTWARE_VERSION_NUMBER;
+
+    uint8_t sum = 0;
+
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        sum += txBuffer[i];
+    }
+
+    // CS
+    txBuffer[3] = 256 - sum;
+
+    uart->write(txBuffer, 4);
+
+    int16_t len = recvData(AM1002_UART_CMD_READ_SOFTWARE_VERSION_NUMBER);
+
+    if (len != 13)
+    {
+        return false;
+    }
+
+    for (uint8_t i = 0; i < 13; i++)
+    {
+        softwareVersionNumber[i] = data[i];
+    }
+    
+    return true;
+}
+
+bool AM1002_UART::requestSerialNumber(void)
+{
+    txBuffer[0] = AM1002_UART_STX_SND;
+    txBuffer[1] = 0x01;
+    txBuffer[2] = AM1002_UART_CMD_READ_SERIAL_NUMBER;
+
+    uint8_t sum = 0;
+
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        sum += txBuffer[i];
+    }
+
+    // CS
+    txBuffer[3] = 256 - sum;
+
+    uart->write(txBuffer, 4);
+
+    int16_t len = recvData(AM1002_UART_CMD_READ_SERIAL_NUMBER);
+
+    if (len != 10)
+    {
+        return false;
+    }
+
+    for (uint8_t i = 0; i < 10; i++)
+    {
+        serialNumber[i] = data[i];
+    }
 
     return true;
 }
@@ -166,4 +232,18 @@ float AM1002_UART::getTemperature(void)
 float AM1002_UART::getHumidity(void)
 {
     return humidity;
+}
+
+void AM1002_UART::readSoftwareVersionNumber(char * pData){
+    for (uint8_t i = 0; i < 13; i++)
+    {
+        pData[i] = softwareVersionNumber[i];
+    }
+}
+
+void AM1002_UART::readSerialNumber(uint8_t * pData){
+    for (uint8_t i = 0; i < 10; i++)
+    {
+        pData[i] = serialNumber[i];
+    }
 }
