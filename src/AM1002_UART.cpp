@@ -132,7 +132,7 @@ bool AM1002_UART::measure(void)
     pm1p0 = (data[4] << 8) + data[5];
     pm2p5 = (data[6] << 8) + data[7];
     pm10 = (data[8] << 8) + data[9];
-    temperature = ((data[10] << 8) + data[11]) / (float)10;
+    temperature = (((data[10] << 8) + data[11]) - 500) / (float)10;
     humidity = ((data[12] << 8) + data[13]) / (float)10;
 
     return true;
@@ -167,7 +167,7 @@ bool AM1002_UART::requestSoftwareVersionNumber(void)
     {
         softwareVersionNumber[i] = data[i];
     }
-    
+
     return true;
 }
 
@@ -234,14 +234,16 @@ float AM1002_UART::getHumidity(void)
     return humidity;
 }
 
-void AM1002_UART::readSoftwareVersionNumber(char * pData){
+void AM1002_UART::readSoftwareVersionNumber(char *pData)
+{
     for (uint8_t i = 0; i < 13; i++)
     {
         pData[i] = softwareVersionNumber[i];
     }
 }
 
-void AM1002_UART::readSerialNumber(uint8_t * pData){
+void AM1002_UART::readSerialNumber(uint8_t *pData)
+{
     for (uint8_t i = 0; i < 10; i++)
     {
         pData[i] = serialNumber[i];
